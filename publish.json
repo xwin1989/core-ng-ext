@@ -1,0 +1,9 @@
+{
+  "modules": [
+    {
+      "name": "mongo-migration",
+      "artifactId": "core-ext-mongo-migration",
+      "version": "2.0.0"
+    }
+  ]
+}

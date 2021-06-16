@@ -1,0 +1,36 @@
+apply from: file("${rootDir}/gradle/azure-maven.gradle")
+apply from: file("${rootDir}/gradle/project.gradle")
+apply from: file("${rootDir}/gradle/publish.gradle")
+
+subprojects {
+    group = 'com.wonder'
+    version = "1.0.0"
+
+    repositories {
+        maven {
+            url 'https://neowu.github.io/maven-repo/'
+            content {
+                includeGroup 'core.framework'
+            }
+        }
+    }
+}
+
+def coreNGVersion = '7.6.8'
+def azureCosmosVersion = '4.0.1'
+
+
+configure([project(':cosmos-db')]) {
+    dependencies {
+        implementation "com.azure:azure-cosmos:${azureCosmosVersion}"
+        implementation "core.framework:core-ng:${coreNGVersion}"
+        testImplementation "core.framework:core-ng-test:${coreNGVersion}"
+    }
+}
+
+configure([project(':mongo-migration')]){
+    dependencies {
+        implementation "core.framework:core-ng-mongo:${coreNGVersion}"
+        testImplementation "core.framework:core-ng-test:${coreNGVersion}"
+    }
+}
