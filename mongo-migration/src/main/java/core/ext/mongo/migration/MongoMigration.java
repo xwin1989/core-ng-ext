@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
 import core.ext.mongo.migration.annotation.Flyway;
 import core.ext.mongo.migration.annotation.Script;
 import core.ext.mongo.migration.exception.FlywayExecuteException;
@@ -25,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -123,6 +126,11 @@ public class MongoMigration {
                 stopWatch.elapsed();
                 boolean isSuccess = false;
                 try {
+                    if (script.autoBackup()) {
+                        logger.info("Auto backup collect#{} begin", flyway.collection());
+                        backupCollection(flyway, script, collection);
+                        logger.info("Auto backup collect#{} end", flyway.collection());
+                    }
                     invokeMethod(method, instance, db, collection);
                     logger.info("Collect #{}, ticket #{}, Invoke class #{}, method #{}", flyway.collection(), script.ticket(), instance.getClass().getCanonicalName(), method.getName());
                     if (needRunTest) {
@@ -173,6 +181,11 @@ public class MongoMigration {
         } else {
             throw new FlywayExecuteException(Strings.format("Flyway class {} has wrong arguments!", instance.getClass().getName()));
         }
+    }
+
+    private void backupCollection(Flyway flyway, Script script, MongoCollection<Document> collection) {
+        String backupCollectionName = String.format("%s_backup_%s_%s", flyway.collection(), script.ticket(), ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        collection.aggregate(List.of(Aggregates.out(backupCollectionName))).toCollection();
     }
 
     /**

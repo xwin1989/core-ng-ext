@@ -43,6 +43,13 @@ public @interface Script {
 
     /**
      * Backup collect before execution
+     * PS: backup need some time, please use it be careful
      */
     boolean autoBackup() default false;
+
+    /**
+     * Backup target database
+     * Mongo driver can't support out to other database, TBD
+     */
+//    String targetBackupDatabase() default "";
 }

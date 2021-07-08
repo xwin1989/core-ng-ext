@@ -41,4 +41,9 @@ public class ItemScript {
     public void executeCrossScript(MongoDatabase database) {
         database.getCollection("items").createIndex(ascending("update_time"));
     }
+
+    @Script(ticket = "MD-799", description = "Init collect", testMethod = "none", order = 4, autoBackup = true)
+    public void initCollect(MongoCollection<Document> collection) {
+        collection.createIndex(ascending("created_time"));
+    }
 }
