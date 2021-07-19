@@ -1,4 +1,4 @@
-# core-ng-ext
+# core-ng-mongo-migration
 
 The current migration function is not suitable for the current frequency of script execution,so we need enhance it.
 
