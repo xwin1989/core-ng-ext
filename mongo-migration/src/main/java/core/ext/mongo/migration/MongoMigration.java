@@ -93,8 +93,9 @@ public class MongoMigration {
             for (Class<?> clazz : flywayService.scanFlywayClass(packagePath)) {
                 migration(db, flywayService, clazz);
             }
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (Throwable e) {
             logger.error(Markers.errorCode("FLYWAY_MIGRATION_FAILED"), e.getMessage(), e);
+            throw new FlywayExecuteException("Flyway script invoked failed! Please check your script.", e);
         }
     }
 
@@ -137,6 +138,9 @@ public class MongoMigration {
                         isSuccess = (Boolean) invokeMethod(methodMap.get(script.testMethod()), instance, db, collection);
                     } else {
                         isSuccess = true;
+                    }
+                    if (!isSuccess) {
+                        throw new FlywayExecuteException(Strings.format("Flyway script id #{}, test #{} executed failed", scriptId, script.testMethod()));
                     }
                 } finally {
                     flywayService.saveHistory(scriptId, script, flyway.collection(), stopWatch.elapsed(), isSuccess);

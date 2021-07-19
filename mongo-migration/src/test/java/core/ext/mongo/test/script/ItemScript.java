@@ -46,4 +46,13 @@ public class ItemScript {
     public void initCollect(MongoCollection<Document> collection) {
         collection.createIndex(ascending("created_time"));
     }
+
+//    @Script(ticket = "MD-666", description = "Failed Script", testMethod = "quickFailed", order = 1)
+//    public void executeScript2(MongoCollection<Document> collection) {
+//        collection.createIndex(ascending("updated_time"));
+//    }
+//
+//    public Boolean quickFailed(MongoCollection<Document> collection) {
+//        throw new RuntimeException("quick failed test");
+//    }
 }
